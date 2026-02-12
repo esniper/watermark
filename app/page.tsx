@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
+import Link from "next/link";
 import { PDFDocument, StandardFonts, rgb, degrees } from "pdf-lib";
 
 const PdfPreview = dynamic(() => import("./pdf-preview"), { ssr: false });
@@ -98,7 +99,7 @@ export default function Home() {
         <div className="flex items-center gap-3">
           <Image src="/logo.svg" alt="" width={28} height={28} />
           <h1 className="text-xl font-semibold tracking-tight">
-            PDF Watermark
+            Watermark
           </h1>
         </div>
         <p className="text-sm text-text-secondary">
@@ -145,6 +146,15 @@ export default function Home() {
         >
           {processing ? "Processing..." : "Add Watermark & Download"}
         </button>
+
+        <div className="mt-auto flex gap-3 text-xs text-text-muted">
+          <Link href="/terms" className="hover:text-text-secondary">
+            Terms
+          </Link>
+          <Link href="/privacy" className="hover:text-text-secondary">
+            Privacy
+          </Link>
+        </div>
       </aside>
 
       {/* Preview area — scrolls independently */}
