@@ -1,20 +1,24 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
+const title = "Watermark — Free PDF watermarking, right in your browser";
+const description =
+  "Add diagonal text watermarks to every page of your PDF. Runs entirely in your browser — files never leave your device. No signup required, completely free.";
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://watermark.flagvault.com"),
-  title: "Watermark",
-  description: "Add text watermarks to your PDFs — entirely in the browser",
+  title,
+  description,
   icons: { icon: "/logo.svg" },
   openGraph: {
-    title: "Watermark",
-    description: "Add text watermarks to your PDFs — entirely in the browser",
+    title,
+    description,
     images: [{ url: "/og.png", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Watermark",
-    description: "Add text watermarks to your PDFs — entirely in the browser",
+    title,
+    description,
     images: ["/og.png"],
   },
 };
