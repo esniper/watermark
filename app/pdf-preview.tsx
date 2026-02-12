@@ -7,7 +7,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 
 const PAGE_WIDTH = 600;
 
-// Approximate the largest font size where 45°-rotated text fits within
+// Approximate the largest font size where 45-degree-rotated text fits within
 // a rectangle of the given width and height. Uses 0.55 as the average
 // character-width-to-font-size ratio for sans-serif CSS fonts.
 function fitFontSize(textLength: number, w: number, h: number): number {
@@ -32,10 +32,10 @@ export default function PdfPreview({
         file={fileUrl}
         onLoadSuccess={({ numPages }) => setNumPages(numPages)}
         loading={
-          <p className="py-20 text-sm text-zinc-500">Loading PDF...</p>
+          <p className="py-20 text-sm text-text-secondary">Loading PDF...</p>
         }
         error={
-          <p className="py-20 text-sm text-red-500">Failed to load PDF.</p>
+          <p className="py-20 text-sm text-accent">Failed to load PDF.</p>
         }
       >
         {numPages &&
@@ -61,7 +61,7 @@ function WatermarkedPage({
   const [pageHeight, setPageHeight] = useState<number | null>(null);
 
   return (
-    <div className="relative mb-6 shadow-lg">
+    <div className="relative mb-6 overflow-hidden rounded-xl border border-border">
       <Page
         pageNumber={pageNumber}
         width={PAGE_WIDTH}
@@ -74,7 +74,7 @@ function WatermarkedPage({
       {watermarkText && pageHeight && (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
           <span
-            className="whitespace-nowrap text-gray-500 select-none"
+            className="whitespace-nowrap text-text-muted select-none"
             style={{
               fontSize: fitFontSize(watermarkText.length, PAGE_WIDTH, pageHeight),
               opacity: 0.3,

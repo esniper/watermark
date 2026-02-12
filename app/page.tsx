@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { PDFDocument, StandardFonts, rgb, degrees } from "pdf-lib";
 
 const PdfPreview = dynamic(() => import("./pdf-preview"), { ssr: false });
@@ -47,19 +48,12 @@ export default function Home() {
         const { width, height } = page.getSize();
         const minDim = Math.min(width, height);
 
-        // Calculate largest font size where rotated text fits on page.
-        // At 45° rotation, bounding box = (textWidth + fontSize) * sin(45)
-        // for each axis. Constraint: (tw + fh) * 0.707 <= minDim.
-        // Since widthOfTextAtSize scales linearly: tw = widthAt1 * fontSize.
         const widthAt1 = font.widthOfTextAtSize(text, 1);
         const maxFontSize = (minDim * Math.SQRT2 * 0.9) / (widthAt1 + 1);
         const fontSize = Math.min(maxFontSize, 200);
 
         const textWidth = font.widthOfTextAtSize(text, fontSize);
 
-        // Center the rotated text. drawText places (x,y) at the baseline
-        // start and rotates around that point. We offset so the rotated
-        // center lands at the page center.
         const cos45 = Math.SQRT1_2;
         const x = width / 2 - cos45 * (textWidth / 2) + cos45 * (fontSize / 2);
         const y = height / 2 - cos45 * (textWidth / 2) - cos45 * (fontSize / 2);
@@ -98,24 +92,25 @@ export default function Home() {
   const canProcess = file && watermarkText.trim() && !processing;
 
   return (
-    <div className="flex min-h-screen">
-      {/* Sidebar */}
-      <aside className="flex w-[300px] shrink-0 flex-col gap-6 border-r border-zinc-200 p-6 dark:border-zinc-800">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
+    <div className="flex h-screen overflow-hidden">
+      {/* Sidebar — fixed, does not scroll */}
+      <aside className="flex h-full w-[300px] shrink-0 flex-col gap-6 border-r border-border bg-surface p-6">
+        <div className="flex items-center gap-3">
+          <Image src="/logo.svg" alt="" width={28} height={28} />
+          <h1 className="text-xl font-semibold tracking-tight">
             PDF Watermark
           </h1>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-            Add a text watermark to every page. Everything runs in your browser.
-          </p>
         </div>
+        <p className="text-sm text-text-secondary">
+          Add a text watermark to every page. Everything runs in your browser.
+        </p>
 
         {/* File drop zone */}
         <div
           onDrop={handleDrop}
           onDragOver={(e) => e.preventDefault()}
           onClick={() => fileInputRef.current?.click()}
-          className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-zinc-300 p-6 text-center transition-colors hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-500"
+          className="flex cursor-pointer flex-col items-center justify-center rounded-[10px] border-2 border-dashed border-border p-6 text-center transition-all duration-150 hover:border-text-muted hover:bg-surface-hover"
         >
           <input
             ref={fileInputRef}
@@ -127,7 +122,7 @@ export default function Home() {
           {file ? (
             <p className="text-sm font-medium break-all">{file.name}</p>
           ) : (
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            <p className="text-sm text-text-secondary">
               Drop a PDF here or click to select
             </p>
           )}
@@ -139,26 +134,26 @@ export default function Home() {
           placeholder="Watermark text"
           value={watermarkText}
           onChange={(e) => setWatermarkText(e.target.value)}
-          className="w-full rounded-lg border border-zinc-300 bg-transparent px-4 py-2.5 text-sm outline-none transition-colors focus:border-zinc-500 dark:border-zinc-700 dark:focus:border-zinc-400"
+          className="w-full rounded-[10px] border border-border bg-transparent px-4 py-3 text-sm text-foreground outline-none transition-colors duration-150 placeholder:text-text-muted focus:border-text-secondary"
         />
 
         {/* Download button */}
         <button
           onClick={addWatermark}
           disabled={!canProcess}
-          className="w-full rounded-lg bg-foreground py-2.5 text-sm font-medium text-background transition-opacity disabled:opacity-40"
+          className="w-full rounded-[10px] bg-accent py-3.5 text-sm font-semibold text-white transition-all duration-150 hover:bg-accent-hover disabled:opacity-40"
         >
           {processing ? "Processing..." : "Add Watermark & Download"}
         </button>
       </aside>
 
-      {/* Preview area */}
-      <main className="flex-1 overflow-y-auto bg-zinc-100 dark:bg-zinc-900">
+      {/* Preview area — scrolls independently */}
+      <main className="flex-1 overflow-y-auto bg-background">
         {fileUrl ? (
           <PdfPreview fileUrl={fileUrl} watermarkText={watermarkText} />
         ) : (
           <div className="flex h-full items-center justify-center">
-            <p className="text-sm text-zinc-400">
+            <p className="text-sm text-text-muted">
               Upload a PDF to preview it here
             </p>
           </div>
