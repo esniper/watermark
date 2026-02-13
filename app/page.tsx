@@ -185,17 +185,22 @@ export default function Home() {
         />
 
         {/* Flatten toggle */}
-        <label className="flex cursor-pointer items-start gap-3">
-          <input
-            type="checkbox"
-            checked={flatten}
-            onChange={(e) => setFlatten(e.target.checked)}
-            className="mt-0.5 accent-accent"
-          />
-          <span className="text-sm text-text-secondary">
-            Flatten PDF
+        <label className="flex cursor-pointer items-center gap-3">
+          <button
+            type="button"
+            role="switch"
+            aria-checked={flatten}
+            onClick={() => setFlatten(!flatten)}
+            className={`relative h-6 w-10 shrink-0 rounded-full transition-colors duration-150 ${flatten ? "bg-accent" : "bg-border"}`}
+          >
+            <span
+              className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition-transform duration-150 ${flatten ? "translate-x-4" : "translate-x-0"}`}
+            />
+          </button>
+          <span>
+            <span className="text-sm text-text-secondary">Flatten PDF</span>
             <span className="block text-xs text-text-muted">
-              Prevents the watermark from being edited or removed
+              Prevents watermark removal
             </span>
           </span>
         </label>
