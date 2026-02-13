@@ -13,6 +13,7 @@ export default function Home() {
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   const [watermarkText, setWatermarkText] = useState("");
   const [processing, setProcessing] = useState(false);
+  const [flatten, setFlatten] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = (selected: File) => {
@@ -32,6 +33,46 @@ export default function Home() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
     if (selected) handleFile(selected);
+  };
+
+  const flattenPdf = async (pdfBytes: Uint8Array): Promise<Uint8Array> => {
+    const { pdfjs } = await import("react-pdf");
+    pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
+
+    const doc = await pdfjs.getDocument({ data: pdfBytes }).promise;
+    const flatDoc = await PDFDocument.create();
+
+    for (let i = 1; i <= doc.numPages; i++) {
+      const page = await doc.getPage(i);
+      const origViewport = page.getViewport({ scale: 1 });
+      const renderViewport = page.getViewport({ scale: 2 });
+
+      const canvas = document.createElement("canvas");
+      canvas.width = renderViewport.width;
+      canvas.height = renderViewport.height;
+
+      await page.render({ canvas, viewport: renderViewport }).promise;
+
+      const blob = await new Promise<Blob>((resolve) => {
+        canvas.toBlob((b) => resolve(b!), "image/jpeg", 0.92);
+      });
+      const imgBytes = new Uint8Array(await blob.arrayBuffer());
+      const img = await flatDoc.embedJpg(imgBytes);
+
+      const flatPage = flatDoc.addPage([
+        origViewport.width,
+        origViewport.height,
+      ]);
+      flatPage.drawImage(img, {
+        x: 0,
+        y: 0,
+        width: flatPage.getWidth(),
+        height: flatPage.getHeight(),
+      });
+    }
+
+    doc.destroy();
+    return flatDoc.save();
   };
 
   const addWatermark = async () => {
@@ -71,7 +112,12 @@ export default function Home() {
       }
 
       const pdfBytes = await pdfDoc.save();
-      const blob = new Blob([new Uint8Array(pdfBytes)], {
+
+      const finalBytes = flatten
+        ? await flattenPdf(new Uint8Array(pdfBytes))
+        : pdfBytes;
+
+      const blob = new Blob([new Uint8Array(finalBytes)], {
         type: "application/pdf",
       });
       const url = URL.createObjectURL(blob);
@@ -137,6 +183,22 @@ export default function Home() {
           onChange={(e) => setWatermarkText(e.target.value)}
           className="w-full rounded-[10px] border border-border bg-transparent px-4 py-3 text-sm text-foreground outline-none transition-colors duration-150 placeholder:text-text-muted focus:border-text-secondary"
         />
+
+        {/* Flatten toggle */}
+        <label className="flex cursor-pointer items-start gap-3">
+          <input
+            type="checkbox"
+            checked={flatten}
+            onChange={(e) => setFlatten(e.target.checked)}
+            className="mt-0.5 accent-accent"
+          />
+          <span className="text-sm text-text-secondary">
+            Flatten PDF
+            <span className="block text-xs text-text-muted">
+              Prevents the watermark from being edited or removed
+            </span>
+          </span>
+        </label>
 
         {/* Download button */}
         <button
