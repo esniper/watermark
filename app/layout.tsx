@@ -9,7 +9,12 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://watermark.flagvault.com"),
   title,
   description,
-  icons: { icon: "/logo.svg" },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/logo.svg", type: "image/svg+xml" },
+    ],
+  },
   openGraph: {
     title,
     description,
