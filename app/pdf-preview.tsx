@@ -20,9 +20,13 @@ function fitFontSize(textLength: number, w: number, h: number): number {
 export default function PdfPreview({
   fileUrl,
   watermarkText,
+  watermarkColor,
+  watermarkOpacity,
 }: {
   fileUrl: string;
   watermarkText: string;
+  watermarkColor: string;
+  watermarkOpacity: number;
 }) {
   const [numPages, setNumPages] = useState<number | null>(null);
 
@@ -44,6 +48,8 @@ export default function PdfPreview({
               key={i}
               pageNumber={i + 1}
               watermarkText={watermarkText}
+              watermarkColor={watermarkColor}
+              watermarkOpacity={watermarkOpacity}
             />
           ))}
       </Document>
@@ -54,9 +60,13 @@ export default function PdfPreview({
 function WatermarkedPage({
   pageNumber,
   watermarkText,
+  watermarkColor,
+  watermarkOpacity,
 }: {
   pageNumber: number;
   watermarkText: string;
+  watermarkColor: string;
+  watermarkOpacity: number;
 }) {
   const [pageHeight, setPageHeight] = useState<number | null>(null);
 
@@ -74,10 +84,11 @@ function WatermarkedPage({
       {watermarkText && pageHeight && (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
           <span
-            className="whitespace-nowrap text-text-muted select-none"
+            className="whitespace-nowrap select-none"
             style={{
               fontSize: fitFontSize(watermarkText.length, PAGE_WIDTH, pageHeight),
-              opacity: 0.3,
+              color: watermarkColor,
+              opacity: watermarkOpacity,
               transform: "rotate(-45deg)",
             }}
           >
