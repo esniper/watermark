@@ -16,7 +16,7 @@ export default function Home() {
   const [flatten, setFlatten] = useState(true);
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [watermarkColor, setWatermarkColor] = useState("#BFBFBF");
-  const [watermarkOpacity, setWatermarkOpacity] = useState(0.3);
+  const [watermarkOpacity, setWatermarkOpacity] = useState(0.5);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = (selected: File) => {
