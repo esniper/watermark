@@ -15,7 +15,7 @@ export default function Home() {
   const [processing, setProcessing] = useState(false);
   const [flatten, setFlatten] = useState(true);
   const [advancedOpen, setAdvancedOpen] = useState(false);
-  const [watermarkColor, setWatermarkColor] = useState("#BFBFBF");
+  const [watermarkColor, setWatermarkColor] = useState("#666666");
   const [watermarkOpacity, setWatermarkOpacity] = useState(0.5);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
